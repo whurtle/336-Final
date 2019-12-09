@@ -64,18 +64,24 @@ app.post("/loginProcess", async function(req, res) {
     }
 });
 
-app.post("/addAuthor", async function(req, res){
-  //res.render("newAuthor");
-  let rows = await insertAuthor(req.body);
-  console.log(rows);
-  //res.send("First name: " + req.body.firstName); //When using the POST method, the form info is stored in req.body
-  let message = "Author WAS NOT added to the database!";
-  if (rows.affectedRows > 0) {
-      message= "Author successfully added!";
-  }
-  res.render("newAuthor", {"message":message});
-    
+app.post("/getGames", async function(req, res) {
+    // let rows = await insertAuthor(req.body);
+    let rows = await getGames(req.body);
+    res.send(rows);
 });
+
+// app.post("/addAuthor", async function(req, res){
+//   //res.render("newAuthor");
+//   let rows = await insertAuthor(req.body);
+//   console.log(rows);
+//   //res.send("First name: " + req.body.firstName); //When using the POST method, the form info is stored in req.body
+//   let message = "Author WAS NOT added to the database!";
+//   if (rows.affectedRows > 0) {
+//       message= "Author successfully added!";
+//   }
+//   res.render("newAuthor", {"message":message});
+    
+// });
 
 // app.get("/updateAuthor", async function(req, res){
 
