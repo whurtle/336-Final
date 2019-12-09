@@ -5,32 +5,77 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script>
         $(document).ready(function() {
-            $("#loginBtn").on("click",function(){
+            
+            $("#new").on("click",function() {
+                alert("Hello");
                 $.ajax({
                     method: "post",
                     url: "/loginProcess",
                     dataType: "json",
                     data: { "username" : $("#username").val(),
-                            "password" : $("#password").val()},
+                            "password" : $("#password").val(),
+                            "action" : "new"},
                     success: function(result,status) {
-                //alert(result);
-                    if(!result){
-                      alert("Wrong credentials!")
-                    }else{
-                        location.href = "/checkout";
+                        if(!result) {
+                            alert("Account was not made");
+                        }
+                        else {
+                            alert("Account made, Press login to proceed")
+                        }
                     }
                 });
+            });
+            
+            $("#admin").on("click",function(){
+                alert("Hello");
+                $.ajax({
+                    method: "post",
+                    url: "/loginProcess",
+                    dataType: "json",
+                    data: { "username" : $("#username").val(),
+                            "password" : $("#password").val(),
+                            "action" : "admin"},
+                    success: function(result,status) {
+                        if(!result) {
+                            alert("Wrong Credentials");
+                        }
+                        else {
+                            location.href = "/admin";
+                        }
+                    }
+                });
+            });
+            
+            
+            $("#loginBtn").on("click",function(){
+                // $.ajax({
+                //     method: "post",
+                //     url: "/loginProcess",
+                //     dataType: "json",
+                //     data: { "username" : $("#username").val(),
+                //             "password" : $("#password").val(),
+                //              "action"  : loginBtn},
+                //     success: function(result,status) {
+                // //alert(result);
+                //         if(!result){
+                //         alert("Wrong credentials!")
+                //         }  else{
+                            location.href = "/checkout";
+                       // }
+                    //}   
                 //});//ajax
-            });//click
-        //}); //document.ready
+        });//click
+    }); //document.ready
 </script>
     </head>
     <body>
         <h1> Sign-in </h1>
     <body>
         Username: <input type="text" name="username" id="username"/><br>
-        Password: <input type="password" id="password">
+        Password: <input type="password" id="password"> <br>
         <button id="loginBtn">Login!</button>
+        <button id="new">Create</button>
+        <button id="admin">Admin Login</button>
     </body>
     </body>
 </html>

@@ -9,6 +9,10 @@
             var taxRate = 0.09;
             var shippingRate = 15.00; 
             var fadeTime = 300;
+        
+            
+            
+            
         $(document).ready(function() { 
             $('.product-quantity input').change( function() {
               updateQuantity(this);
@@ -74,6 +78,7 @@ function removeItem(removeButton)
     </head>
     <body>
         <h1> Check Out </h1>
+<% authorList.forEach(function(author, count){  %>
 <div class="shopping-cart">
   <div class="column-labels">
     <label class="product-image">Image</label>
@@ -85,30 +90,33 @@ function removeItem(removeButton)
   </div>
   <div class="product">
     <div class="product-image">
-      <img src="https://assets.pcmag.com/media/images/471937-microsoft-xbox-one-x.jpg?width=333&height=245">
+      <img src="<%=author.image%>">
     </div>
     <div class="product-details">
-      <div class="product-title">Xbox-One</div>
+      <div class="product-title"><%=author.title%></div>
     </div>
-    <div class="product-price">100</div>
+    <div class="product-price"><%=author.price%></div>
     <div class="product-quantity">
-      <input type="number" value="2" min="1">
+      <input type="number" value="<%=count.count%>" min="1">
     </div>
     <div class="product-removal">
       <button class="remove-product">
         Remove
       </button>
     </div>
-    <div class="product-line-price">200</div>
+    <div class="product-line-price"><%=count.count%> * <%=author.price%> </div>
   </div>
 </div>
+<% }) %>
+
+
 <div class="totals">
     <div class="totals-item">
       <label>Subtotal</label>
       <div class="totals-value" id="cart-subtotal"></div>
     </div>
     <div class="totals-item">
-      <label>Tax (.9%)</label>
+      <label>Tax (.09%)</label>
       <div class="totals-value" id="cart-tax"></div>
     </div>
     <div class="totals-item">
