@@ -47,13 +47,18 @@ app.post("/loginProcess", async function(req, res) {
     if(req.body.action == "login"){
         let result = await validateLogin(req.body.username, req.body.password);
         console.log(result);
-        if(result != []){
+        if(result != 0){
             res.send(true);
         } else {
             res.send(false);
         }
     } else if (req.body.action == "new"){
-        
+        let result = await createAccount(req.body.username, req.body.password);
+        if(result.affectedRows > 0){
+            res.send(true);
+        } else {
+            res.send(false);
+        }
     } else if (req.body.action == "admin"){
         
     }
@@ -100,8 +105,30 @@ function validateLogin(user, pass){
            if (err) throw err;
            console.log("Connected!");
         
-           let sql = `SELECT * from db_users where userName = ?
+           let sql = `SELECT count(*) from db_users where userName = ?
                       AND password = ?`;
+        
+           let params = [user, pass];
+        
+           conn.query(sql, params, function (err, rows, fields) {
+              if (err) throw err;
+              //res.send(rows);
+              conn.end();
+              resolve(rows[0]['count(*)']);
+           });
+        
+        });
+    });
+}
+
+function createAccount(user, pass){
+    let conn = dbConnection();
+    return new Promise(function(resolve, reject){
+        conn.connect(function(err) {
+           if (err) throw err;
+           console.log("Connected!");
+        
+           let sql = `INSERT into db_users(userName, password) values (?, ?)`;
         
            let params = [user, pass];
         
@@ -114,32 +141,6 @@ function validateLogin(user, pass){
         
         });
     });
-}
-
-function insertAuthor(body){
-   
-   let conn = dbConnection();
-    
-    return new Promise(function(resolve, reject){
-        conn.connect(function(err) {
-           if (err) throw err;
-           console.log("Connected!");
-        
-           let sql = `INSERT INTO q_author
-                        (firstName, lastName, sex)
-                         VALUES (?,?,?)`;
-        
-           let params = [body.firstName, body.lastName, body.gender];
-        
-           conn.query(sql, params, function (err, rows, fields) {
-              if (err) throw err;
-              //res.send(rows);
-              conn.end();
-              resolve(rows);
-           });
-        
-        });//connect
-    });//promise 
 }
 
 function insertGame(info){
