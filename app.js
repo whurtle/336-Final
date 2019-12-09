@@ -25,6 +25,10 @@ app.get("/checkout", function(req, res){
     res.render("checkout");
 });
 
+app.get("/search", function(req, res){
+    res.render("search");
+});
+
 // app.get("/admin", async function(req, res){
     
 //   console.log("authenticated: ", req.session.authenticated);    
