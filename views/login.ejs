@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Login </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+        $(document).ready(function() {
+            $("#loginBtn").on("click",function(){
+                $.ajax({
+                    method: "post",
+                    url: "/loginProcess",
+                    dataType: "json",
+                    data: { "username" : $("#username").val(),
+                            "password" : $("#password").val()},
+                    success: function(result,status) {
+                //alert(result);
+                    if(!result){
+                      alert("Wrong credentials!")
+                    }else{
+                        location.href = "/checkout";
+                    }
+                });
+                //});//ajax
+            });//click
+        //}); //document.ready
+</script>
+    </head>
+    <body>
+        <h1> Sign-in </h1>
+    <body>
+        Username: <input type="text" name="username" id="username"/><br>
+        Password: <input type="password" id="password">
+        <button id="loginBtn">Login!</button>
+    </body>
+    </body>
+</html>

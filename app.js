@@ -22,22 +22,22 @@ app.get("/", function(req, res){
    res.render("login");
 });
 
-app.get("/admin", async function(req, res){
+// app.get("/admin", async function(req, res){
     
-   console.log("authenticated: ", req.session.authenticated);    
+//   console.log("authenticated: ", req.session.authenticated);    
    
-   if (req.session.authenticated) { //if user hasn't authenticated, sending them to login screen
+//   if (req.session.authenticated) { //if user hasn't authenticated, sending them to login screen
        
-     let authorList = await getAuthorList();  
-       //console.log(authorList);
-       res.render("admin", {"authorList":authorList});  
+//     //  let authorList = await getAuthorList();  
+//       //console.log(authorList);
+//       res.render("admin", {"authorList":authorList});  
        
-   }  else { 
+//   }  else { 
     
-       res.render("login"); 
+//       res.render("login"); 
    
-   }
-});
+//   }
+// });
 
 app.post("/loginProcess", function(req, res) {
     
@@ -68,12 +68,12 @@ app.post("/addAuthor", async function(req, res){
     
 });
 
-app.get("/updateAuthor", async function(req, res){
+// app.get("/updateAuthor", async function(req, res){
 
-  let authorInfo = await getAuthorInfo(req.query.authorId);    
-  //console.log(authorInfo);
-  res.render("updateAuthor", {"authorInfo":authorInfo});
-});
+//   let authorInfo = await getAuthorInfo(req.query.authorId);    
+//   //console.log(authorInfo);
+//   res.render("updateAuthor", {"authorInfo":authorInfo});
+// });
 
 app.post("/updateAuthor", async function(req, res){
   let rows = await updateAuthor(req.body);
@@ -89,19 +89,19 @@ app.post("/updateAuthor", async function(req, res){
     
 });
 
-app.get("/deleteAuthor", async function(req, res){
- let rows = await deleteAuthor(req.query.authorId);
- console.log(rows);
-  //res.send("First name: " + req.body.firstName); //When using the POST method, the form info is stored in req.body
-  let message = "Author WAS NOT deleted!";
-  if (rows.affectedRows > 0) {
-      message= "Author successfully deleted!";
-  }    
+// app.get("/deleteAuthor", async function(req, res){
+//  let rows = await deleteAuthor(req.query.authorId);
+//  console.log(rows);
+//   //res.send("First name: " + req.body.firstName); //When using the POST method, the form info is stored in req.body
+//   let message = "Author WAS NOT deleted!";
+//   if (rows.affectedRows > 0) {
+//       message= "Author successfully deleted!";
+//   }    
     
-   let authorList = await getAuthorList();  
-   //console.log(authorList);
-   res.render("admin", {"authorList":authorList});
-});
+//   let authorList = await getAuthorList();  
+//   //console.log(authorList);
+//   res.render("admin", {"authorList":authorList});
+// });
 
 app.get("/dbTest", function(req, res){
 
