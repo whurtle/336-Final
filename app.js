@@ -1,6 +1,5 @@
 const express = require("express");
 const mysql   = require("mysql");
-const sha256  = require("sha256");
 const session = require('express-session');
 
 const app = express();
@@ -22,9 +21,9 @@ app.get("/", function(req, res){
    res.render("login");
 });
 
-app.get("/checkout", function(req, res)
+app.get("/checkout", function(req, res){
     res.render("checkout");
-})
+});
 
 // app.get("/admin", async function(req, res){
     
@@ -43,20 +42,21 @@ app.get("/checkout", function(req, res)
 //   }
 // });
 
-app.post("/loginProcess", function(req, res) {
-    
-    if ( req.body.username == "admin" && sha256(req.body.password) == "0a4346f806b28b3ce94905c3ac56fcd5ee2337d8613161696aba52eb0c3551cc") {
-       req.session.authenticated = true;
-       res.send({"loginSuccess":true});
-    } else {
-       res.send(false);
+app.post("/loginProcess", async function(req, res) {
+    // let rows = await insertAuthor(req.body);
+    if(req.body.action == "login"){
+        let result = await validateLogin(req.body.username, req.body.password);
+        console.log(result);
+        if(result != []){
+            res.send(true);
+        } else {
+            res.send(false);
+        }
+    } else if (req.body.action == "new"){
+        
+    } else if (req.body.action == "admin"){
+        
     }
-
-    
-});
-
-app.get("/addAuthor", function(req, res){
-  res.render("newAuthor");
 });
 
 app.post("/addAuthor", async function(req, res){
@@ -79,55 +79,42 @@ app.post("/addAuthor", async function(req, res){
 //   res.render("updateAuthor", {"authorInfo":authorInfo});
 // });
 
-app.post("/updateAuthor", async function(req, res){
-  let rows = await updateAuthor(req.body);
+// app.post("/updateAuthor", async function(req, res){
+//   let rows = await updateAuthor(req.body);
   
-  let authorInfo = req.body;
-  console.log(rows);
-  //res.send("First name: " + req.body.firstName); //When using the POST method, the form info is stored in req.body
-  let message = "Author WAS NOT updated!";
-  if (rows.affectedRows > 0) {
-      message= "Author successfully updated!";
-  }
-  res.render("updateAuthor", {"message":message, "authorInfo":authorInfo});
-    
-});
-
-// app.get("/deleteAuthor", async function(req, res){
-//  let rows = await deleteAuthor(req.query.authorId);
-//  console.log(rows);
+//   let authorInfo = req.body;
+//   console.log(rows);
 //   //res.send("First name: " + req.body.firstName); //When using the POST method, the form info is stored in req.body
-//   let message = "Author WAS NOT deleted!";
+//   let message = "Author WAS NOT updated!";
 //   if (rows.affectedRows > 0) {
-//       message= "Author successfully deleted!";
-//   }    
+//       message= "Author successfully updated!";
+//   }
+//   res.render("updateAuthor", {"message":message, "authorInfo":authorInfo});
     
-//   let authorList = await getAuthorList();  
-//   //console.log(authorList);
-//   res.render("admin", {"authorList":authorList});
 // });
 
-app.get("/dbTest", function(req, res){
-
+function validateLogin(user, pass){
     let conn = dbConnection();
-    
-    conn.connect(function(err) {
-       if (err) throw err;
-       console.log("Connected!");
-    
-       let sql = "SELECT * FROM q_author WHERE sex = 'F'";
-    
-       conn.query(sql, function (err, rows, fields) {
-          if (err) throw err;
-          conn.end();
-          res.send(rows);
-       });
-    
+    return new Promise(function(resolve, reject){
+        conn.connect(function(err) {
+           if (err) throw err;
+           console.log("Connected!");
+        
+           let sql = `SELECT * from db_users where userName = ?
+                      AND password = ?`;
+        
+           let params = [user, pass];
+        
+           conn.query(sql, params, function (err, rows, fields) {
+              if (err) throw err;
+              //res.send(rows);
+              conn.end();
+              resolve(rows);
+           });
+        
+        });
     });
-
-});//dbTest
-
-//functions
+}
 
 function insertAuthor(body){
    
@@ -145,61 +132,6 @@ function insertAuthor(body){
            let params = [body.firstName, body.lastName, body.gender];
         
            conn.query(sql, params, function (err, rows, fields) {
-              if (err) throw err;
-              //res.send(rows);
-              conn.end();
-              resolve(rows);
-           });
-        
-        });//connect
-    });//promise 
-}
-
-function updateAuthor(body){
-   
-   let conn = dbConnection();
-    
-    return new Promise(function(resolve, reject){
-        conn.connect(function(err) {
-           if (err) throw err;
-           console.log("Connected!");
-        
-           let sql = `UPDATE q_author
-                      SET firstName = ?, 
-                          lastName  = ?, 
-                                sex = ?
-                     WHERE authorId = ?`;
-        
-           let params = [body.firstName, body.lastName, body.gender, body.authorId];
-        
-           console.log(sql);
-           
-           conn.query(sql, params, function (err, rows, fields) {
-              if (err) throw err;
-              //res.send(rows);
-              conn.end();
-              resolve(rows);
-           });
-        
-        });//connect
-    });//promise 
-}
-
-
-
-function deleteAuthor(authorId){
-   
-   let conn = dbConnection();
-    
-    return new Promise(function(resolve, reject){
-        conn.connect(function(err) {
-           if (err) throw err;
-           console.log("Connected!");
-        
-           let sql = `DELETE FROM q_author
-                      WHERE authorId = ?`;
-        
-           conn.query(sql, [authorId], function (err, rows, fields) {
               if (err) throw err;
               //res.send(rows);
               conn.end();
