@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <header>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <title>GG's</title>
     <center> <h1 style="color:black;"> Welcome to GG's!</h1> </center>
     </header>
@@ -56,27 +57,27 @@
     </style>
     <div class="topnav">
             <div class="search-container">
-                <input type="text" placeholder="Search.." id="search">
-                <select>
-                  <option value="volvo">Volvo</option>
-                  <option value="saab">Saab</option>
-                  <option value="mercedes">Mercedes</option>
+                <input type="text" placeholder="Search.." id="keyword">
+                <select id="console">
+                  <option value="XBOX One">Xbox One</option>
+                  <option value="PlayStation 4">Play</option>
+                  <option value="Nintendo Switch">Nintento Switch</option>
+                  <option value="PC">PC</option>
                 </select>
-                <select>
-                  <option value="volvo">Volvo</option>
-                  <option value="saab">Saab</option>
-                  <option value="mercedes">Mercedes</option>
-                  <option value="audi">Audi</option>
+                <select id="new">
+                  <option value="Y">New</option>
+                  <option value="N">Used</option>
                 </select>
-                <select>
-                  <option value="volvo">Volvo</option>
-                  <option value="saab">Saab</option>
-                  <option value="mercedes">Mercedes</option>
-                  <option value="audi">Audi</option>
+                <select id="order">
+                  <option value="-price">Price Ascending</option>
+                  <option value="price">Price Descending</option>
                 </select>
 
                 <button id="searchBtn" type="submit">Search</button>
             </div>
+    </div>
+    <div id="games">
+        
     </div>
     </center>
      <script>
@@ -85,20 +86,18 @@
                     method: "post",
                     url: "/getGames",
                     dataType: "json",
-                    data: { "keyword" : $("#myInput").val(),
+                    data: { "keyword" : $("#keyword").val(),
                             "console" : $("#console").val(),
                              "new"  : $("#new").val(),
                              "order": $("#order").val()
+                    },
                     success: function(result,status) {
                         alert(result);
-                        if(!result){
                         result.forEach(function(game){
-                            
+                            $("#games").append(`<img src=${game.image}>`);
                         });
                     }   
                 });//ajax
         });//click
      </script>
-    <body>
-    </body>
 </html>

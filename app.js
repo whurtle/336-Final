@@ -69,8 +69,8 @@ app.post("/loginProcess", async function(req, res) {
 });
 
 app.post("/getGames", async function(req, res) {
-    // let rows = await insertAuthor(req.body);
     let rows = await getGames(req.body);
+    console.log(rows);
     res.send(rows);
 });
 
@@ -284,7 +284,7 @@ function getGames(query){
                       title LIKE '%${keyword}%'`;
         
            if (query.console) { //user selected a category
-              sql += " AND category = ?"; //To prevent SQL injection, SQL statement shouldn't have any quotes.
+              sql += " AND console = ?"; //To prevent SQL injection, SQL statement shouldn't have any quotes.
               params.push(query.console);
            }
            console.log(query.new);
@@ -294,7 +294,7 @@ function getGames(query){
            }
            console.log(query.order);
            if(query.order){
-               sql += " order by ";
+               sql += " order by ?";
                params.push(query.order);
            }
            
