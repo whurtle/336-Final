@@ -3,12 +3,10 @@
     <header>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <title>GG's</title>
-    <center> <h1 style="color:black;"> Admin </h1> </center>
+    <center > <h1 style="color:black;"> Admin </h1> <button id="logout">Log Out</button></center>
     </header>
     <center>
-    <style>
-    
-    </style>
+    <br>
     <div class="topnav">
             <div class="search-container">
                 <input type="text" placeholder="Game Title.." id="title">
@@ -68,19 +66,7 @@
               });
           }
           function reloadThat(){
-              $.ajax({
-                    method: "post",
-                    url: "/getGames",
-                    dataType: "json",
-                    data: { "keyword" : "",
-                            "console" : "",
-                             "new"  : "",
-                             "order": ""
-                    },
-                    success: function(result,status) {
-                        show(result);
-                    }   
-                });//ajax
+              location.reload();
           }
           $("#report").on("click", function(){
               $.ajax({
@@ -105,10 +91,12 @@
                             "id" : $("#selectID").val()
                     },
                     success: function(result,status) {
-                        alert("Updated");
-                        reloadThat();
+                        
+                        
                     }   
                 });//ajax
+                alert("Stock added");
+                reloadThat();
           });
           $("#delete").on("click", function(){
               $.ajax({
@@ -118,10 +106,12 @@
                     data: { "gameID" : $("#selectID").val()
                     },
                     success: function(result,status) {
-                        alert("Deleted");
-                        reloadThat();
+                        
+                        
                     }   
                 });//ajax
+                alert("Deleted");
+                reloadThat();
           });
         $("#addGame").on("click",function(){
                 $.ajax({
@@ -137,9 +127,14 @@
                              "stock": $("#stock").val()
                     },
                     success: function(result,status) {
-                        alert("Success");
+                        
                     }   
                 });//ajax
+                alert("Game added");
+                reloadThat();
         });//click
+        $("#logout").on("click", function(){
+              location.href = "/";
+          });
      </script>
 </html>

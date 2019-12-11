@@ -26,6 +26,7 @@
 
                 <button id="searchBtn" type="submit">Search</button>
                 <a href="/checkout">Checkout</a>
+                <button id="logout">Log Out</button>
             </div>
     </div>
     <br>
@@ -45,7 +46,6 @@
                              "order": $("#order").val()
                     },
                     success: function(result,status) {
-                        alert(result);
                         $("#games").empty();
                         result.forEach(function(game){
                             $("#games").append(`<div id="${game.id}"><img src=${game.image} height="150px"><br>${game.title}<br>${game.price}<button class="addCart">Add to Cart</button><br>${game.description}</div><br>`);
@@ -64,9 +64,12 @@
                             "game" : parseInt(id)
                     },
                     success: function(result,status) {
-                        alert(result);
+                        alert(result.res);
                     }   
                 });//ajax
         });//click
+        $("#logout").on("click", function(){
+              location.href = "/";
+          });
      </script>
 </html>

@@ -82,17 +82,19 @@ app.post("/loginProcess", async function(req, res) {
 
 app.post("/getGames", async function(req, res) {
     let rows = await getGames(req.body);
-    console.log(rows);
     res.send(rows);
 });
 
 app.post("/addCart", async function(req, res){
-    if(containsItem(req.body) != 0){
+    if(await containsItem(req.body) == true){
+        
         await incrCart(req.body);
-        res.send("Added one more")
+        res.send({res: "Added one more"});
     } else {
+        
+        
         await addCart(req.body);
-        res.send("Added to Cart")
+        res.send({res: "Added one more"});
     }
 });
 
@@ -206,41 +208,6 @@ app.post("/updateStock", async function(req, res){
     });
 });
 
-
-// app.post("/addAuthor", async function(req, res){
-//   //res.render("newAuthor");
-//   let rows = await insertAuthor(req.body);
-//   console.log(rows);
-//   //res.send("First name: " + req.body.firstName); //When using the POST method, the form info is stored in req.body
-//   let message = "Author WAS NOT added to the database!";
-//   if (rows.affectedRows > 0) {
-//       message= "Author successfully added!";
-//   }
-//   res.render("newAuthor", {"message":message});
-    
-// });
-
-// app.get("/updateAuthor", async function(req, res){
-
-//   let authorInfo = await getAuthorInfo(req.query.authorId);    
-//   //console.log(authorInfo);
-//   res.render("updateAuthor", {"authorInfo":authorInfo});
-// });
-
-// app.post("/updateAuthor", async function(req, res){
-//   let rows = await updateAuthor(req.body);
-  
-//   let authorInfo = req.body;
-//   console.log(rows);
-//   //res.send("First name: " + req.body.firstName); //When using the POST method, the form info is stored in req.body
-//   let message = "Author WAS NOT updated!";
-//   if (rows.affectedRows > 0) {
-//       message= "Author successfully updated!";
-//   }
-//   res.render("updateAuthor", {"message":message, "authorInfo":authorInfo});
-    
-// });
-
 function getCart(userName){
     let conn = dbConnection();
     return new Promise(function(resolve, reject){
@@ -278,7 +245,7 @@ function containsItem(body){
               if (err) throw err;
               console.log(rows[0]["count(*)"]);
               conn.end();
-              resolve(rows[0]["count(*)"]);
+              resolve(rows[0]["count(*)"] > 0);
               //res.send(rows);
            });
         });
@@ -292,7 +259,7 @@ function addCart(body){
            if (err) throw err;
            console.log("Connected!");
         
-           let sql = `INSERT into db_cart(userName, inventory_id, count) VALUES(?, ?, 0) ;`;
+           let sql = `INSERT into db_cart(userName, inventory_id, count) VALUES(?, ?, 1) ;`;
            
            let params = [body.user, body.game];
         
@@ -300,7 +267,7 @@ function addCart(body){
               if (err) throw err;
               //res.send(rows);
               conn.end();
-              resolve(rows[0]['count(*)']);
+              resolve(rows);
            });
         
         });
