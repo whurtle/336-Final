@@ -23,6 +23,7 @@ app.get("/", function(req, res){
 
 app.get("/checkout", async function(req, res){
     let rows = await getCart("alex");
+    console.log(rows);
     res.render("checkout", {"cartItems": rows});
 });
 
@@ -133,7 +134,7 @@ function getCart(userName){
            if (err) throw err;
            console.log("Connected!");
         
-           let sql = `select title, image, price, count from db_users natural join db_cart join db_inventory on db_cart.inventory_id = db_inventory.id where userName = ?;`;
+           let sql = `select inventory_id, title, image, price, count from db_users natural join db_cart join db_inventory on db_cart.inventory_id = db_inventory.id where userName = ?;`;
         
            let params = [userName];
         
