@@ -78,9 +78,10 @@ function removeItem(removeButton)
     </head>
     <body>
         <h1> Check Out </h1>
-<% authorList.forEach(function(author, count){  %>
+<% cartItems.forEach(function(author){  %>
 <div class="shopping-cart">
   <div class="column-labels">
+    <img src=`<%=author.image%>`>
     <label class="product-image">Image</label>
     <label class="product-details">Product</label>
     <label class="product-price">Price</label>
@@ -97,14 +98,14 @@ function removeItem(removeButton)
     </div>
     <div class="product-price"><%=author.price%></div>
     <div class="product-quantity">
-      <input type="number" value="<%=count.count%>" min="1">
+      <input type="number" value="<%=author.count%>" min="1">
     </div>
     <div class="product-removal">
       <button class="remove-product">
         Remove
       </button>
     </div>
-    <div class="product-line-price"><%=count.count%> * <%=author.price%> </div>
+    <div class="product-line-price"><%=author.count%> * <%=author.price%> </div>
   </div>
 </div>
 <% }) %>

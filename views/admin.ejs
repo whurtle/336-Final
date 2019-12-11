@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <header>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>GG's</title>
+    <center> <h1 style="color:black;"> Admin </h1> </center>
+    </header>
+    <center>
+    <style>
+    
+    </style>
+    <div class="topnav">
+            <div class="search-container">
+                <input type="text" placeholder="Search.." id="keyword">
+                <select id="console">
+                  <option value="XBOX One">Xbox One</option>
+                  <option value="PlayStation 4">Play</option>
+                  <option value="Nintendo Switch">Nintento Switch</option>
+                  <option value="PC">PC</option>
+                </select>
+                <select id="new">
+                  <option value="Y">New</option>
+                  <option value="N">Used</option>
+                </select>
+                <select id="order">
+                  <option value="-price">Price Ascending</option>
+                  <option value="price">Price Descending</option>
+                </select>
+
+                <button id="searchBtn" type="submit">Search</button>
+                <button id="displayAll">Display All</button>
+            </div>
+    </div>
+    <div id="games" class="grid-container">
+    </div>
+    </center>
+     <script>
+          $("#searchBtn").on("click",function(){
+                $.ajax({
+                    method: "post",
+                    url: "/getGames",
+                    dataType: "json",
+                    data: { "keyword" : $("#keyword").val(),
+                            "console" : $("#console").val(),
+                             "new"  : $("#new").val(),
+                             "order": $("#order").val()
+                    },
+                    success: function(result,status) {
+                        alert(result);
+                        $("#games").empty();
+                        result.forEach(function(game){
+                            // value="${game.id}
+                            $("#games").append(`<div class="grid-item"><img src="${game.image}" width="100px">${game.title}</div>`);
+                        });
+                    }   
+                });//ajax
+        });//click
+        $("#displayAll").on("click",function(){
+                $.ajax({
+                    method: "post",
+                    url: "/getGames",
+                    dataType: "json",
+                    data: { "keyword" : "",
+                            "console" : "",
+                             "new"  : "",
+                             "order": ""
+                    },
+                    success: function(result,status) {
+                        alert(result);
+                        $("#games").empty();
+                        result.forEach(function(game){
+                            // value="${game.id}
+                            $("#games").append(`<div class="grid-item"><img src="${game.image}" width="100px">${game.title}</div>`);
+                        });
+                    }   
+                });//ajax
+        });//click
+     </script>
+</html>

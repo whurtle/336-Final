@@ -36,10 +36,10 @@
                             "action" : "admin"},
                     success: function(result,status) {
                         if(!result) {
-                            alert("Wrong Credentials");
+                            alert("Wrong Credentials for Admin");
                         }
                         else {
-                            location.href = "/search";
+                            location.href = "/admin";
                         }
                     }
                 });
@@ -59,7 +59,7 @@
                         if(!result){
                         alert("Wrong credentials!")
                         }  else{
-                            location.href = "/checkout";
+                            location.href = "/search";
                         }
                     }   
                 });//ajax

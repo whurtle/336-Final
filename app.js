@@ -21,12 +21,17 @@ app.get("/", function(req, res){
    res.render("login");
 });
 
-app.get("/checkout", function(req, res){
-    res.render("checkout");
+app.get("/checkout", async function(req, res){
+    let rows = await getCart("alex");
+    res.render("checkout", {"cartItems": rows});
 });
 
 app.get("/search", function(req, res){
     res.render("search");
+});
+
+app.get("/admin", function(req, res){
+    res.render("admin");
 });
 
 // app.get("/admin", async function(req, res){
@@ -64,7 +69,13 @@ app.post("/loginProcess", async function(req, res) {
             res.send(false);
         }
     } else if (req.body.action == "admin"){
-        
+        let result = await validateAdmin(req.body.username, req.body.password);
+        console.log(result);
+        if(result != 0){
+            res.send(true);
+        } else {
+            res.send(false);
+        }
     }
 });
 
@@ -74,6 +85,13 @@ app.post("/getGames", async function(req, res) {
     res.send(rows);
 });
 
+app.post("/addCart", async function(req, res){
+    let result = await addCart(req.body);
+});
+
+app.get("/getCart", async function(req, res){
+   let rows = await getCart(req.body.userName); 
+});
 // app.post("/addAuthor", async function(req, res){
 //   //res.render("newAuthor");
 //   let rows = await insertAuthor(req.body);
@@ -108,6 +126,50 @@ app.post("/getGames", async function(req, res) {
     
 // });
 
+function getCart(userName){
+    let conn = dbConnection();
+    return new Promise(function(resolve, reject){
+        conn.connect(function(err) {
+           if (err) throw err;
+           console.log("Connected!");
+        
+           let sql = `select title, image, price, count from db_users natural join db_cart join db_inventory on db_cart.inventory_id = db_inventory.id where userName = ?;`;
+        
+           let params = [userName];
+        
+           conn.query(sql, params, function (err, rows, fields) {
+              if (err) throw err;
+              //res.send(rows);
+              conn.end();
+              resolve(rows);
+           });
+        
+        });
+    });
+}
+
+function addCart(body){
+    let conn = dbConnection();
+    return new Promise(function(resolve, reject){
+        conn.connect(function(err) {
+           if (err) throw err;
+           console.log("Connected!");
+        
+           let sql = `INSERT VALUES(?, ?, ?) into db_cart;`;
+        
+           let params = [body.user, body.game, body.count];
+        
+           conn.query(sql, params, function (err, rows, fields) {
+              if (err) throw err;
+              //res.send(rows);
+              conn.end();
+              resolve(rows);
+           });
+        
+        });
+    });
+}
+
 function validateLogin(user, pass){
     let conn = dbConnection();
     return new Promise(function(resolve, reject){
@@ -116,6 +178,29 @@ function validateLogin(user, pass){
            console.log("Connected!");
         
            let sql = `SELECT count(*) from db_users where userName = ?
+                      AND password = ?`;
+        
+           let params = [user, pass];
+        
+           conn.query(sql, params, function (err, rows, fields) {
+              if (err) throw err;
+              //res.send(rows);
+              conn.end();
+              resolve(rows[0]['count(*)']);
+           });
+        
+        });
+    });
+}
+
+function validateAdmin(user, pass){
+    let conn = dbConnection();
+    return new Promise(function(resolve, reject){
+        conn.connect(function(err) {
+           if (err) throw err;
+           console.log("Connected!");
+        
+           let sql = `SELECT count(*) from db_admin where adminName = ?
                       AND password = ?`;
         
            let params = [user, pass];
@@ -265,7 +350,46 @@ function getTotalSales(){
         });//connect
     });//promise 
 }
-
+// function getCart(query){
+//     let conn = dbConnection();
+//     return new Promise(function(resolve, reject){
+//         conn.connect(function(err) {
+//           if (err) throw err;
+//           console.log("Connected!");
+        
+//           let params = [];
+        
+//           let sql = `SELECT * FROM db_inventory
+//                       WHERE 
+//                       title LIKE '%${keyword}%'`;
+        
+//           if (query.console) { //user selected a category
+//               sql += " AND console = ?"; //To prevent SQL injection, SQL statement shouldn't have any quotes.
+//               params.push(query.console);
+//           }
+//           console.log(query.new);
+//           if (query.new){
+//               sql += " AND new = ?";
+//               params.push(query.new);
+//           }
+//           console.log(query.order);
+//           if(query.order){
+//               sql += " order by ?";
+//               params.push(query.order);
+//           }
+           
+//           console.log(params);
+//           console.log("SQL:", sql);
+//           conn.query(sql, params, function (err, rows, fields) {
+//               if (err) throw err;
+//               //res.send(rows);
+//               conn.end();
+//               resolve(rows);
+//           });
+        
+//         });//connect
+//     });//promise
+// }
 function getGames(query){
     
     let keyword = query.keyword;
