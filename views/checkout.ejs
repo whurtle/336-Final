@@ -16,9 +16,10 @@
         window.onload = updateQuantity;
         $(document).ready(function() { 
           recalculateCart();
-            $('.product-quantity input').change( function() {
+            $('.product-quantity').change( function() {
               updateQuantity(this);
             });
+            
             $('.product-removal button').click( function() {
               removeItem(this);
             });
@@ -94,7 +95,7 @@ function removeItem(removeButton)
   </div>
   <div class="product">
     <div class="product-image">
-      <img src="<%=author.image%>" height="100px">
+      <img  src="<%=author.image%>" height="100px">
     </div>
     <div class="product-details">
       <div class="product-title"><%=author.title%></div>
@@ -134,6 +135,42 @@ function removeItem(removeButton)
       <div class="totals-value" id="cart-total"></div>
     </div>
   </div>
-        <button id="loginBtn">Checkout</button>
+        <button id="checkoutBtn">Checkout</button>
     </body>
+    <script>
+      $("#checkoutBtn").on("click",function(){
+                let images = [];
+                let counts = [];
+                 $('.product').each(function () {
+                  images.push($(this).children('.product-image').children('img').attr('src'));
+                  counts.push($(this).children('.product-quantity').children('input').val());
+                });
+                for(let i = 0; i < images.length; i++){
+                  console.log(images[i]);
+                  console.log(counts[i]);
+                  $.ajax({
+                    method: "post",
+                    url: "/updateStock",
+                    dataType: "json",
+                    data: { "image" : images[i],
+                            "change" : parseInt(counts[i])
+                    },
+                    success: function(result,status) {
+                    }   
+                });//ajax
+                }
+                $.ajax({
+                    method: "delete",
+                    url: "/deleteCart",
+                    dataType: "json",
+                    data: { "userName" : "alex"
+                    },
+                    success: function(result,status) {
+                      
+                    }   
+                });//ajax
+                alert("Checked Out!");
+                location.href = "/search";
+        });//click
+    </script>
 </html>

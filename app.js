@@ -87,7 +87,13 @@ app.post("/getGames", async function(req, res) {
 });
 
 app.post("/addCart", async function(req, res){
-    let result = await addCart(req.body);
+    if(containsItem(req.body) != 0){
+        await incrCart(req.body);
+        res.send("Added one more")
+    } else {
+        await addCart(req.body);
+        res.send("Added to Cart")
+    }
 });
 
 app.get("/getCart", async function(req, res){
@@ -178,6 +184,28 @@ app.get("/reports", async function(req, res){
   let report3 = await getTotalSales();
   res.send({report1, report2, report3});
 });
+app.post("/updateStock", async function(req, res){
+       let conn = dbConnection();
+       conn.connect(function(err) {
+       if (err) throw err;
+       console.log("Connected!");
+    
+       let sql = `UPDATE db_inventory
+                  SET stock = stock - ?,
+                  sold = sold + ?
+                  where image = ?;`;
+    
+       let params = [req.body.change, req.body.change, req.body.image];
+    
+       conn.query(sql, params, function (err, rows, fields) {
+          if (err) throw err;
+          //res.send(rows);
+          conn.end();
+       });
+        
+    });
+});
+
 
 // app.post("/addAuthor", async function(req, res){
 //   //res.render("newAuthor");
@@ -235,6 +263,28 @@ function getCart(userName){
     });
 }
 
+function containsItem(body){
+    let conn = dbConnection();
+    return new Promise(function(resolve, reject){
+        conn.connect(function(err) {
+           if (err) throw err;
+           console.log("Connected!");
+        
+           let sql = `select count(*) from db_cart where userName = ? and inventory_id = ?`;
+        
+           let params = [body.user, body.game];
+        
+           conn.query(sql, params, function (err, rows, fields) {
+              if (err) throw err;
+              console.log(rows[0]["count(*)"]);
+              conn.end();
+              resolve(rows[0]["count(*)"]);
+              //res.send(rows);
+           });
+        });
+    });
+}
+
 function addCart(body){
     let conn = dbConnection();
     return new Promise(function(resolve, reject){
@@ -242,17 +292,40 @@ function addCart(body){
            if (err) throw err;
            console.log("Connected!");
         
-           let sql = `INSERT VALUES(?, ?, ?) into db_cart;`;
-        
-           let params = [body.user, body.game, body.count];
+           let sql = `INSERT into db_cart(userName, inventory_id, count) VALUES(?, ?, 0) ;`;
+           
+           let params = [body.user, body.game];
         
            conn.query(sql, params, function (err, rows, fields) {
               if (err) throw err;
               //res.send(rows);
               conn.end();
-              resolve(rows);
+              resolve(rows[0]['count(*)']);
            });
         
+        });
+    });
+}
+
+function incrCart(body){
+    let conn = dbConnection();
+    return new Promise(function(resolve, reject){
+        conn.connect(function(err) {
+           if (err) throw err;
+           console.log("Connected!");
+           let sql =`
+                      UPDATE db_cart
+                      SET count = count + 1 
+                      WHERE userName = ? and inventory_id = ?;`;
+        
+           let params = [body.user, body.game];
+        
+           conn.query(sql, params, function (err, rows, fields) {
+              if (err) throw err;
+              //res.send(rows);
+              conn.end();
+              resolve();
+           });
         });
     });
 }
