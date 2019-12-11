@@ -37,8 +37,8 @@
             </div>
     </div>
     <br>
-    <div>
-        <button id="report">Generate Reports</button>
+    <div id = "reports">
+        <button id="report">Generate Reports</button><br>
         
     </div>
     <br>
@@ -75,10 +75,19 @@
                     dataType: "json",
                     data: { },
                     success: function(result,status) {
-                        result.forEach(function(item){
+                        console.log(result);
+                        $("#reports").empty();
+                        $("#reports").append("Low Stock: <br>");
+                        result.report1.forEach(function(item){
                            console.log(item); 
+                            $("#reports").append(`${item.title} : ${item.stock} left<br>`);
                         });
-                        reloadThat();
+                        $("#reports").append("<br>Top 3 Sales: <br>");
+                        result.report2.forEach(function(item){
+                           console.log(item); 
+                            $("#reports").append(`${item.title} : ${item.sold} sales<br>`);
+                        });
+                        $("#reports").append(`<br>Total Sales: ${result.report3[0]['sum(sold)']} total sales<br>`);
                     }   
                 });//ajax
           });

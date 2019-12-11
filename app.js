@@ -182,7 +182,7 @@ app.post("/addStock", async function(req, res){
 
 app.get("/reports", async function(req, res){
   let report1 = await getLowStock();
-  let report2 = await getTopTenSales();
+  let report2 = await getTopThreeSales();
   let report3 = await getTotalSales();
   res.send({report1, report2, report3});
 });
@@ -433,7 +433,7 @@ function getLowStock(){
         });//connect
     });//promise 
 }
-function getTopTenSales(){
+function getTopThreeSales(){
     let conn = dbConnection();
     return new Promise(function(resolve, reject){
         conn.connect(function(err) {
@@ -443,7 +443,7 @@ function getTopTenSales(){
            let sql = `SELECT *
                       FROM db_inventory 
                       order by sold desc
-                      limit 10;`;
+                      limit 3;`;
         
            conn.query(sql, function (err, rows, fields) {
               if (err) throw err;
