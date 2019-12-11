@@ -17,22 +17,39 @@ app.use(session({ secret: 'any word', cookie: { maxAge: 60000 }}))
 
 //routes
 app.get("/", function(req, res){
-   req.session.authenticated = false;
+    var authAdmin = false;
+    var authUser = false;
+   //req.session.authenticated = false;
    res.render("login");
 });
 
 app.get("/checkout", async function(req, res){
-    let rows = await getCart("alex");
-    console.log(rows);
-    res.render("checkout", {"cartItems": rows});
+    if(req.session.authUser){
+        let rows = await getCart("alex");
+        console.log(rows);
+        res.render("checkout", {"cartItems": rows});
+    }
+    else{
+        res.render('login');
+    }
 });
 
 app.get("/search", function(req, res){
-    res.render("search");
+    if(req.session.authUser){
+        res.render("search");
+    }
+    else{
+        res.render('login');
+    }
 });
 
 app.get("/admin", function(req, res){
-    res.render("admin");
+    if(req.session.authAdmin){
+        res.render("admin");
+    }
+    else{
+        res.render('login');
+    }
 });
 
 // app.get("/admin", async function(req, res){
@@ -58,6 +75,7 @@ app.post("/loginProcess", async function(req, res) {
         let result = await validateLogin(req.body.username, req.body.password);
         console.log(result);
         if(result != 0){
+            req.session.authUser = true;
             res.send(true);
         } else {
             res.send(false);
@@ -65,6 +83,7 @@ app.post("/loginProcess", async function(req, res) {
     } else if (req.body.action == "new"){
         let result = await createAccount(req.body.username, req.body.password);
         if(result.affectedRows > 0){
+            req.session.authUser = true;
             res.send(true);
         } else {
             res.send(false);
@@ -73,6 +92,8 @@ app.post("/loginProcess", async function(req, res) {
         let result = await validateAdmin(req.body.username, req.body.password);
         console.log(result);
         if(result != 0){
+            req.session.authUser = true;
+            req.session.authAdmin = true;
             res.send(true);
         } else {
             res.send(false);
@@ -81,8 +102,13 @@ app.post("/loginProcess", async function(req, res) {
 });
 
 app.post("/getGames", async function(req, res) {
-    let rows = await getGames(req.body);
-    res.send(rows);
+    if(req.session.authUser){
+        let rows = await getGames(req.body);
+        res.send(rows);
+    }
+    else{
+        res.render('login');
+    }
 });
 
 app.post("/addCart", async function(req, res){
