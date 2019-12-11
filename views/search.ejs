@@ -25,6 +25,7 @@
                 </select>
 
                 <button id="searchBtn" type="submit">Search</button>
+                <button id= "displayAll">List All Games</button>
                 <a href="/checkout">Checkout</a>
                 <button id="logout">Log Out</button>
             </div>
@@ -53,6 +54,25 @@
                     }   
                 });//ajax
         });//click
+                $("#displayAll").on("click",function(){
+                $.ajax({
+                    method: "post",
+                    url: "/getGames",
+                    dataType: "json",
+                    data: { "keyword" : "",
+                            "console" : "",
+                             "new"  : "",
+                             "order": ""
+                    },
+                    success: function(result,status) {
+                        alert(result);
+                        result.forEach(function(game){
+                            $("#games").append(`<img src=${game.image}>`);
+                           // $("#games").append(${game.info});
+                        });
+                    }   
+                });//ajax
+        });//click
         $(document).on("click", ".addCart", function(){
                 let id = $(this).parent().attr('id');
                 console.log(id);
@@ -71,5 +91,6 @@
         $("#logout").on("click", function(){
               location.href = "/";
           });
+         
      </script>
 </html>
