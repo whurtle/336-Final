@@ -9,11 +9,13 @@
             var taxRate = 0.09;
             var shippingRate = 15.00; 
             var fadeTime = 300;
+            
+            
         
-            
-            
-            
+
+        window.onload = updateQuantity;
         $(document).ready(function() { 
+          recalculateCart();
             $('.product-quantity input').change( function() {
               updateQuantity(this);
             });
@@ -78,20 +80,21 @@ function removeItem(removeButton)
     </head>
     <body>
         <h1> Check Out </h1>
+        <hr>
 <% cartItems.forEach(function(author){  %>
 <div class="shopping-cart">
   <div class="column-labels">
-    <img src=`<%=author.image%>`>
-    <label class="product-image">Image</label>
-    <label class="product-details">Product</label>
-    <label class="product-price">Price</label>
-    <label class="product-quantity">Quantity</label>
-    <label class="product-removal">Remove</label>
-    <label class="product-line-price">Total</label>
+    
+    <label class="product-image"></label>
+    <label class="product-details"></label>
+    <label class="product-price"></label>
+    <label class="product-quantity"></label>
+    <label class="product-removal"></label>
+    <label class="product-line-price"></label>
   </div>
   <div class="product">
     <div class="product-image">
-      <img src="<%=author.image%>">
+      <img src="<%=author.image%>" height="100px">
     </div>
     <div class="product-details">
       <div class="product-title"><%=author.title%></div>
@@ -105,8 +108,9 @@ function removeItem(removeButton)
         Remove
       </button>
     </div>
-    <div class="product-line-price"><%=author.count%> * <%=author.price%> </div>
-  </div>
+    Item total:
+    <div class="product-line-price"><%=author.count * author.price%> </div>
+    <hr>
 </div>
 <% }) %>
 
@@ -116,6 +120,7 @@ function removeItem(removeButton)
       <label>Subtotal</label>
       <div class="totals-value" id="cart-subtotal"></div>
     </div>
+  </div>
     <div class="totals-item">
       <label>Tax (.09%)</label>
       <div class="totals-value" id="cart-tax"></div>
