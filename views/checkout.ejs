@@ -80,7 +80,7 @@ function removeItem(removeButton)
         </script>
     </head>
     <body>
-        <h1> Check Out </h1>
+        <h1> Check Out </h1> <button id="returnShop">Return Shopping</button>
         <hr>
 <% cartItems.forEach(function(author){  %>
 <div class="shopping-cart">
@@ -171,6 +171,9 @@ function removeItem(removeButton)
                 });//ajax
                 alert("Checked Out!");
                 location.href = "/search";
+        });//click
+        $("#returnShop").on("click",function(){
+          location.href = "/search";
         });//click
     </script>
 </html>
