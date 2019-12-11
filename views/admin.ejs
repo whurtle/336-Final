@@ -11,7 +11,7 @@
     </style>
     <div class="topnav">
             <div class="search-container">
-                <input type="text" placeholder="Search.." id="keyword">
+                <input type="text" placeholder="Game Title.." id="title">
                 <select id="console">
                   <option value="XBOX One">Xbox One</option>
                   <option value="PlayStation 4">Play</option>
@@ -22,41 +22,33 @@
                   <option value="Y">New</option>
                   <option value="N">Used</option>
                 </select>
-                <select id="order">
-                  <option value="-price">Price Ascending</option>
-                  <option value="price">Price Descending</option>
-                </select>
+                <input type="text" placeholder="Image URL.." id="url">
+                <input type="number" step="0.01" placeholder="Price.." id="price">
+                <input type="text" placeholder="Description.." id="desc">
+                <input type="number" placeholder="Stock.." id="stock">
 
-                <button id="searchBtn" type="submit">Search</button>
-                <button id="displayAll">Display All</button>
+                <button id="addGame" type="submit">Add Game</button>
+                <br>
+                <br>
+                <input type="number" placeholder="Game ID.." id="selectID">
+                <br>
+                <input type="number" placeholder="Stock amount.." id="stockAmount">
+                <br>
+                <button id="delete">Delete Game</button>
+                <button id="addStock">Add Stock</button>
             </div>
     </div>
+    <br>
+    <div>
+        <button id="report">Generate Reports</button>
+        
+    </div>
+    <br>
     <div id="games" class="grid-container">
     </div>
     </center>
      <script>
-          $("#searchBtn").on("click",function(){
-                $.ajax({
-                    method: "post",
-                    url: "/getGames",
-                    dataType: "json",
-                    data: { "keyword" : $("#keyword").val(),
-                            "console" : $("#console").val(),
-                             "new"  : $("#new").val(),
-                             "order": $("#order").val()
-                    },
-                    success: function(result,status) {
-                        alert(result);
-                        $("#games").empty();
-                        result.forEach(function(game){
-                            // value="${game.id}
-                            $("#games").append(`<div class="grid-item"><img src="${game.image}" width="100px">${game.title}</div>`);
-                        });
-                    }   
-                });//ajax
-        });//click
-        $("#displayAll").on("click",function(){
-                $.ajax({
+          $.ajax({
                     method: "post",
                     url: "/getGames",
                     dataType: "json",
@@ -66,12 +58,86 @@
                              "order": ""
                     },
                     success: function(result,status) {
-                        alert(result);
-                        $("#games").empty();
-                        result.forEach(function(game){
-                            // value="${game.id}
-                            $("#games").append(`<div class="grid-item"><img src="${game.image}" width="100px">${game.title}</div>`);
+                        show(result);
+                    }   
+                });//ajax
+          function show(res){
+              $("#games").empty();
+              res.forEach(function(game){
+                  $("#games").append(`<div class="grid-item"><img src="${game.image}" width="100px"><br>${game.title}</div>ID: ${game.id} <br>Stock: ${game.stock}<br>`);
+              });
+          }
+          function reloadThat(){
+              $.ajax({
+                    method: "post",
+                    url: "/getGames",
+                    dataType: "json",
+                    data: { "keyword" : "",
+                            "console" : "",
+                             "new"  : "",
+                             "order": ""
+                    },
+                    success: function(result,status) {
+                        show(result);
+                    }   
+                });//ajax
+          }
+          $("#report").on("click", function(){
+              $.ajax({
+                    method: "get",
+                    url: "/reports",
+                    dataType: "json",
+                    data: { },
+                    success: function(result,status) {
+                        result.forEach(function(item){
+                           console.log(item); 
                         });
+                        reloadThat();
+                    }   
+                });//ajax
+          });
+          $("#addStock").on("click", function(){
+              $.ajax({
+                    method: "post",
+                    url: "/addStock",
+                    dataType: "json",
+                    data: { "value" : $("#stockAmount").val(),
+                            "id" : $("#selectID").val()
+                    },
+                    success: function(result,status) {
+                        alert("Updated");
+                        reloadThat();
+                    }   
+                });//ajax
+          });
+          $("#delete").on("click", function(){
+              $.ajax({
+                    method: "delete",
+                    url: "/deleteGame",
+                    dataType: "json",
+                    data: { "gameID" : $("#selectID").val()
+                    },
+                    success: function(result,status) {
+                        alert("Deleted");
+                        reloadThat();
+                    }   
+                });//ajax
+          });
+        $("#addGame").on("click",function(){
+                $.ajax({
+                    method: "post",
+                    url: "/addGame",
+                    dataType: "json",
+                    data: { "title" : $("#title").val(),
+                            "console" : $("#console").val(),
+                             "new"  : $("#new").val(),
+                             "image": $("#url").val(),
+                             "price": $("#price").val(),
+                             "desc" : $("#desc").val(),
+                             "stock": $("#stock").val()
+                    },
+                    success: function(result,status) {
+                        alert("Success");
                     }   
                 });//ajax
         });//click

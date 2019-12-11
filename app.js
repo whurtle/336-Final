@@ -92,6 +92,92 @@ app.post("/addCart", async function(req, res){
 app.get("/getCart", async function(req, res){
    let rows = await getCart(req.body.userName); 
 });
+
+app.delete("/deleteCart", async function(req, res){
+    let conn = dbConnection();
+       conn.connect(function(err) {
+       if (err) throw err;
+       console.log("Connected!");
+    
+       let sql = `DELETE FROM db_cart WHERE userName = ?`;
+    
+       let params = [req.body.userName];
+    
+       conn.query(sql, params, function (err, rows, fields) {
+          if (err) throw err;
+          //res.send(rows);
+          conn.end();
+       });
+        
+    });
+});
+
+app.post("/addGame", async function(req, res){
+       let conn = dbConnection();
+   conn.connect(function(err) {
+       if (err) throw err;
+       console.log("Connected!");
+    
+       let sql = `INSERT INTO db_inventory(title, console, new, image, price, description, stock, sold) VALUES(?, ?, ?, ?, ?, ?, ?, 0);`;
+       
+       let params = [req.body.title, req.body.console, req.body.new, req.body.image, req.body.price, req.body.desc, req.body.stock];
+    
+       conn.query(sql, params, function (err, rows, fields) {
+          if (err) throw err;
+          //res.send(rows);
+          conn.end();
+       });
+        
+    });
+});
+
+app.delete("/deleteGame", async function(req, res){
+       let conn = dbConnection();
+       conn.connect(function(err) {
+       if (err) throw err;
+       console.log("Connected!");
+    
+       let sql = `DELETE FROM db_inventory WHERE id = ?`;
+    
+       let params = [req.body.gameID];
+    
+       conn.query(sql, params, function (err, rows, fields) {
+          if (err) throw err;
+          //res.send(rows);
+          conn.end();
+       });
+        
+    });
+});
+
+app.post("/addStock", async function(req, res){
+       let conn = dbConnection();
+       conn.connect(function(err) {
+       if (err) throw err;
+       console.log("Connected!");
+    
+       let sql = `UPDATE db_inventory
+                  SET stock = stock + ?
+                  where id = ?`;
+    
+       let params = [req.body.value, req.body.id];
+    
+       conn.query(sql, params, function (err, rows, fields) {
+          if (err) throw err;
+          //res.send(rows);
+          conn.end();
+       });
+        
+    });
+});
+
+app.get("/reports", async function(req, res){
+  let report1 = await getLowStock();
+  let report2 = await getTopTenSales();
+  let report3 = await getTotalSales();
+  res.send({report1, report2, report3});
+});
+
 // app.post("/addAuthor", async function(req, res){
 //   //res.render("newAuthor");
 //   let rows = await insertAuthor(req.body);
@@ -292,9 +378,9 @@ function getLowStock(){
            if (err) throw err;
            console.log("Connected!");
         
-           let sql = `SELECT * from
-                      FROM db_inventory WHERE stock < 5 
-                      GROUP BY stock`;
+           let sql = `SELECT *
+                      FROM db_inventory WHERE stock < 30 
+                      GROUP BY stock;`;
         
            conn.query(sql, function (err, rows, fields) {
               if (err) throw err;
@@ -313,10 +399,10 @@ function getTopTenSales(){
            if (err) throw err;
            console.log("Connected!");
         
-           let sql = `SELECT * from
+           let sql = `SELECT *
                       FROM db_inventory 
-                      GROUP BY sold order desc
-                      limit 10`;
+                      order by sold desc
+                      limit 10;`;
         
            conn.query(sql, function (err, rows, fields) {
               if (err) throw err;
@@ -337,14 +423,14 @@ function getTotalSales(){
            if (err) throw err;
            console.log("Connected!");
         
-           let sql = `SELECT total(sold)
-                      FROM db_inventory`;
+           let sql = `SELECT sum(sold)
+                      FROM db_inventory;`;
         
            conn.query(sql, function (err, rows, fields) {
               if (err) throw err;
               //res.send(rows);
               conn.end();
-              resolve(rows[0]); //Query returns only ONE record
+              resolve(rows); //Query returns only ONE record
            });
         
         });//connect
